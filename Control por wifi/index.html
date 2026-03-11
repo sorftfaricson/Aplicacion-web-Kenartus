@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>Control Robot Cartesiano</title>
+
+<!-- CONEXIÓN AL CSS -->
+<link rel="stylesheet" href="style.css">
+
+<script>
+
+function enviar(comando)
+{
+fetch("http://192.168.4.1/comando?valor="+comando);
+}
+
+function enviarConDelay(comando1, comando2, delay)
+{
+fetch("http://192.168.4.1/comando?valor="+comando1);
+setTimeout(function() {
+fetch("http://192.168.4.1/comando?valor="+comando2);
+}, delay);
+}
+
+function enviarValorConDelay(valor, caracter = '@') {
+    let strValor = valor.toString();
+    for(let i = 0; i < strValor.length; i++) {
+    setTimeout(function() {fetch("http://192.168.4.1/comando?valor="+strValor[i]);}, i * 5);
+}
+setTimeout(function() {
+fetch("http://192.168.4.1/comando?valor="+caracter);
+}, strValor.length * 5);
+}
+
+// restaura todos los inputs numéricos al valor 1
+function restablecerValores() {
+    document.querySelectorAll('input[type="number"]').forEach(n => {
+        n.value = 1;
+    });
+    // Espera 10ms tras configurar los valores antes de enviar el primer comando
+    setTimeout(() => {
+        enviarValorConDelay(1,'t');
+        setTimeout(() => enviarValorConDelay(1,'u'), 3000);
+        setTimeout(() => enviarValorConDelay(1,'v'), 3000);
+    }, 10);
+}
+
+
+
+</script>
+
+</head>
+
+<body>
+
+<h2>Control de Robot Kenartus</h2>
+
+<!-- ================= VELOCIDADES ================= -->
+
+<div class="velocidad">
+
+Velocidad Z:
+<input type="number" value="1" min="1" max="10" onchange="enviarValorConDelay(this.value, 'v')">
+<input type="checkbox" onchange="if(this.checked) enviarConDelay('5', '*', 100); else enviarConDelay('4', '*', 100);"> Seguro Z
+
+</div>
+
+<div class="velocidad">
+
+Velocidad Y:
+<input type="number" value="1" min="1" max="10" onchange="enviarValorConDelay(this.value, 'u')">
+<input type="checkbox" onchange="if(this.checked) enviarConDelay('3', '*', 100); else enviarConDelay('2', '*', 100);"> Seguro Y
+
+</div>
+
+<div class="velocidad">
+
+Velocidad X:
+<input type="number" value="1" min="1" max="10" onchange="enviarValorConDelay(this.value, 't')">
+<input type="checkbox" onchange="if(this.checked) enviarConDelay('1', '*', 100); else enviarConDelay('0', '*', 100);"> Seguro X
+
+</div>
+
+<br>
+
+<button class="reset" onclick="restablecerValores()">Restablecer Valores</button>
+
+<!-- ================= MOVIMIENTOS ================= -->
+
+<div class="movimientos">
+
+<!-- CRUZ X Y -->
+<div class="cruz">
+
+<button class="yplus" onmousedown="enviar('e')" onmouseup="enviar('d')">
+<img src="imagenes/arriba.png" width="40"><br>
+Y+
+</button>
+
+<button class="xminus" onmousedown="enviar('c')" onmouseup="enviar('a')">
+<img src="imagenes/izq.png" width="40"><br>
+X-
+</button>
+
+<button class="xplus" onmousedown="enviar('b')" onmouseup="enviar('a')">
+<img src="imagenes/der.png" width="40"><br>
+X+
+</button>
+
+<button class="yminus" onmousedown="enviar('f')" onmouseup="enviar('d')">
+<img src="imagenes/abajo.png" width="40"><br>
+Y-
+</button>
+
+</div>
+
+<!-- CONTROLES Z -->
+
+<div class="zcontrol">
+
+<button class="zmas" onmousedown="enviar('h')" onmouseup="enviar('g')">
+<img src="imagenes/diagonalB.png" width="40"><br>
+Z+
+</button>
+
+<button class="zmenos" onmousedown="enviar('i')" onmouseup="enviar('g')">
+<img src="imagenes/diagonalA.png" width="40"><br>
+Z-
+</button>
+
+<button class="wstop" onclick="enviar('W')">
+<img src="imagenes/cuadrado.png" width="40"><br>
+W
+</button>
+
+</div>
+
+
+<!-- ================= RUTINAS ================= -->
+
+<div class="rutinas">
+
+<h3>Rutinas</h3>
+
+<button class="rutina_btn" onclick="enviarValorConDelay(1,'M')">
+<img src="imagenes/pierna1.png" width="30">
+Pierna
+</button>
+
+<button class="rutina_btn" onclick="enviarValorConDelay(2,'M')">
+<img src="imagenes/brazo1.png" width="30">
+Brazo
+</button>
+
+<button class="rutina_btn" onclick="enviarValorConDelay(3,'M')">
+<img src="imagenes/caminador1.png" width="30">
+Caminador
+</button>
+
+<button class="rutina_btn" onclick="enviarValorConDelay(4,'M')">
+<img src="imagenes/piernaSentado1.png" width="30">
+Ejer. Sentado
+</button>
+
+<button class="rutina_btn" onclick="enviarValorConDelay(0,'M')">
+Detener Rutina
+</button>
+
+</div>
+
+<br><br>
+
+
+</body>
+</html>
